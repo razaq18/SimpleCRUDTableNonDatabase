@@ -1,0 +1,442 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        table {
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+        }
+
+        th {
+        cursor: pointer;
+        }
+
+        th, td {
+        text-align: left;
+        padding: 16px;
+        }
+
+        tr:nth-child(even) {
+        background-color: #f2f2f2
+        }
+            
+        input[type='button'] 
+        {
+            cursor: pointer;
+            border: none;
+            color: #FFF;
+        }
+        
+        input[type='text'], select 
+        {
+            text-align: left;
+            border: solid 1px #CCC;
+            width: auto;
+            padding: 2px 3px;
+        }
+        .pagination li:hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="hidden" id="hfRowIndex" value="" />
+        <table class="table">
+            <tr>
+                <td>Id</td>
+                <td>
+                    <input type="text" name="Id" id="txtId" value="1" />
+                </td>
+            </tr>
+            <tr>
+                <td>Nama Barang</td>
+                <td>
+                    <input type="text" name="Name" id="txtName" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td>Type Barang</td>
+                <td>
+                    <select name="Type" id="Type">
+                        <option value="Elektronik">Elektronik</option>
+                        <option value="SparePart">SparePart</option>
+                        <option value="Accessoris">Accessoris</option>
+                        <option value="Minuman">Minuman</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Stok Barang</td>
+                <td>
+                    <input type="text" name="Stok" id="txtStok" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type='button' id='btnAdd'>Add</button>
+                    <button type='button' id='btnUpdate' style="display: none;">Update</button>
+                </td>
+                <td>
+                    <button type='button' id='btnClear'>Clear</button>
+                </td>
+            </tr>
+        </table>
+        <div class="search">
+            <input type="text" id="Search" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+        </div>
+        <div class="form-group"> 	<!--		Show Numbers Of Rows 		-->
+            <select class  ="form-control" name="state" id="maxRows">
+                <option value="5000">Show ALL Rows</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="70">70</option>
+                <option value="100">100</option>
+            </select>
+            
+        </div>
+        <table id="tblBarang" class="table" border="1px">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Id</th>
+                    <th onclick="sortTable(1)">Name</th>
+                    <th onclick="sortTable(2)">Type Barang</th>
+                    <th onclick="sortTable(3)">Stok Barang</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</th>
+                    <td>Asus</td>
+                    <td>Elektronik</td>
+                    <td>10</td>
+                    <td><a class='Edit' href='JavaScript:void(0);' >Edit</a></td>
+                    <td><a class='delete' href='JavaScript:void(0);'>Delete</a></td>
+                </tr>
+                <tr>
+                    <td>2</th>
+                    <td>Del</td>
+                    <td>Elektronik</td>
+                    <td>13</td>
+                    <td><a class='Edit' href='JavaScript:void(0);' >Edit</a></td>
+                    <td><a class='delete' href='JavaScript:void(0);'>Delete</a></td>
+                </tr>
+                <tr>
+                    <td>3</th>
+                    <td>Toshiba</td>
+                    <td>Elektronik</td>
+                    <td>12</td>
+                    <td><a class='Edit' href='JavaScript:void(0);' >Edit</a></td>
+                    <td><a class='delete' href='JavaScript:void(0);'>Delete</a></td>
+                </tr>
+                <tr>
+                    <td>4</th>
+                    <td>GTX1080</td>
+                    <td>SparePart</td>
+                    <td>8</td>
+                    <td><a class='Edit' href='JavaScript:void(0);' >Edit</a></td>
+                    <td><a class='delete' href='JavaScript:void(0);'>Delete</a></td>
+                </tr>
+                <tr>
+                    <td>5</th>
+                    <td>Modem</td>
+                    <td>Accessoris</td>
+                    <td>10</td>
+                    <td><a class='Edit' href='JavaScript:void(0);' >Edit</a></td>
+                    <td><a class='delete' href='JavaScript:void(0);'>Delete</a></td>
+                </tr>
+                <tr>
+                    <td>6</th>
+                    <td>AQuA</td>
+                    <td>Minuman</td>
+                    <td>100</td>
+                    <td><a class='Edit' href='JavaScript:void(0);' >Edit</a></td>
+                    <td><a class='delete' href='JavaScript:void(0);'>Delete</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class='pagination-container' >
+            <nav>
+                <ul class="pagination">
+
+                    <li data-page="prev" >
+                        <span> < <span class="sr-only">(current)</span></span>
+                    </li>
+                    <li data-page="next" id="prev">
+                        <span> > <span class="sr-only">(current)</span></span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#btnAdd').on('click', function () {
+                var name, Type, Stok, id;
+                id = $("#txtId").val();
+                name = $("#txtName").val();
+                Type = $("#Type").val();
+                Stok = $("#txtStok").val();
+ 
+                var edit = "<a class='Edit' href='JavaScript:void(0);' >Edit</a>";
+                var del = "<a class='delete' href='JavaScript:void(0);'>Delete</a>";
+ 
+                if (name == "" || Type == "" || Stok == "") {
+                    alert("Name and Country fields required!");
+                } else {
+                    var table = "<tr><td>" + id + "</td><td>" + name + "</td><td>" + Type + "</td><td>" + Stok + "</td><td>" + edit + "</td><td>" + del + "</td></tr>";
+                    $("#tblBarang").append(table);
+                }
+                id = $("#txtId").val("");
+                name = $("#txtName").val("");
+                Type = $("#Type").val("");
+                Stok = $("#txtStok").val("");
+                Clear();
+            });
+ 
+            $('#btnUpdate').on('click', function () {
+                var name, Type, Stok, id;
+                id = $("#txtId").val();
+                name = $("#txtName").val();
+                Type = $("#Type").val();
+                Stok = $("#txtStok").val();
+ 
+                $('#tblBarang tbody tr').eq($('#hfRowIndex').val()).find('td').eq(1).html(name);
+                $('#tblBarang tbody tr').eq($('#hfRowIndex').val()).find('td').eq(2).html(Type);
+                $('#tblBarang tbody tr').eq($('#hfRowIndex').val()).find('td').eq(2).html(Stok)
+ 
+                $('#btnAdd').show();
+                $('#btnUpdate').hide();
+                Clear();
+            });
+ 
+            $("#tblBarang").on("click", ".delete", function (e) {
+                if (confirm("Are you sure want to delete this record!")) {
+                    $(this).closest('tr').remove();
+                } else {
+                    e.preventDefault();
+                }
+            });
+ 
+            $('#btnClear').on('click', function () {
+                Clear();
+            });
+ 
+            $("#tblBarang").on("click", ".Edit", function (e) {
+                var row = $(this).closest('tr');
+                $('#hfRowIndex').val($(row).index());
+                var td = $(row).find("td");
+                $('#txtId').val($(td).eq(0).html());
+                $('#txtName').val($(td).eq(1).html());
+                $('#Type').val($(td).eq(2).html());
+                $('#txtStok').val($(td).eq(2).html());
+                $('#btnAdd').hide();
+                $('#btnUpdate').show();
+            });
+        });
+        function Clear() {
+            $("#txtId").val("");
+            $("#txtName").val("");
+            $("#Type").val("");
+            $("#txtStok").val("");
+            $("#hfRowIndex").val("");
+        }
+    </script>
+    <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("tblBarang");
+            switching = true;
+
+            dir = "asc"; 
+            while (switching) {
+
+                switching = false;
+                rows = table.rows;
+    
+                for (i = 1; i < (rows.length - 1); i++) {
+    
+                    shouldSwitch = false;
+    
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+        
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+
+                        shouldSwitch= true;
+                        break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount ++;      
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        getPagination('#tblBarang');
+
+        function getPagination(table) {
+        var lastPage = 1;
+
+        $('#maxRows')
+            .on('change', function(evt) {
+
+            lastPage = 1;
+            $('.pagination')
+                .find('li')
+                .slice(1, -1)
+                .remove();
+            var trnum = 0; 
+            var maxRows = parseInt($(this).val()); 
+
+            if (maxRows == 5000) {
+                $('.pagination').hide();
+            } else {
+                $('.pagination').show();
+            }
+
+            var totalRows = $(table + ' tbody tr').length;
+            $(table + ' tr:gt(0)').each(function() {
+                
+                trnum++; 
+                if (trnum > maxRows) {
+                
+                $(this).hide(); 
+                }
+                if (trnum <= maxRows) {
+                $(this).show();
+                } 
+            });
+            if (totalRows > maxRows) {
+                
+                var pagenum = Math.ceil(totalRows / maxRows); 
+                
+                for (var i = 1; i <= pagenum; ) {
+                
+                $('.pagination #prev')
+                    .before(
+                    '<li data-page="' +
+                        i +
+                        '">\
+                                        <span>' +
+                        i++ +
+                        '<span class="sr-only">(current)</span></span>\
+                                        </li>'
+                    )
+                    .show();
+                }
+            } 
+            $('.pagination [data-page="1"]').addClass('active'); 
+            $('.pagination li').on('click', function(evt) {
+                
+                evt.stopImmediatePropagation();
+                evt.preventDefault();
+                var pageNum = $(this).attr('data-page'); 
+
+                var maxRows = parseInt($('#maxRows').val()); 
+
+                if (pageNum == 'prev') {
+                if (lastPage == 1) {
+                    return;
+                }
+                pageNum = --lastPage;
+                }
+                if (pageNum == 'next') {
+                if (lastPage == $('.pagination li').length - 2) {
+                    return;
+                }
+                pageNum = ++lastPage;
+                }
+
+                lastPage = pageNum;
+                var trIndex = 0; 
+                $('.pagination li').removeClass('active'); 
+                $('.pagination [data-page="' + lastPage + '"]').addClass('active'); 
+                limitPagging();
+                $(table + ' tr:gt(0)').each(function() {
+                trIndex++; 
+                if (
+                    trIndex > maxRows * pageNum ||
+                    trIndex <= maxRows * pageNum - maxRows
+                ) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                } 
+                });
+            }); 
+            limitPagging();
+            })
+            .val(5)
+            .change();
+
+        }
+
+        function limitPagging(){
+
+
+            if($('.pagination li').length > 7 ){
+                    if( $('.pagination li.active').attr('data-page') <= 3 ){
+                    $('.pagination li:gt(5)').hide();
+                    $('.pagination li:lt(5)').show();
+                    $('.pagination [data-page="next"]').show();
+                }if ($('.pagination li.active').attr('data-page') > 3){
+                    $('.pagination li:gt(0)').hide();
+                    $('.pagination [data-page="next"]').show();
+                    for( let i = ( parseInt($('.pagination li.active').attr('data-page'))  -2 )  ; i <= ( parseInt($('.pagination li.active').attr('data-page'))  + 2 ) ; i++ ){
+                        $('.pagination [data-page="'+i+'"]').show();
+
+                    }
+
+                }
+            }
+        }
+    </script>
+    
+    <script>
+        function myFunction() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("Search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("tblBarang");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+                } else {
+                tr[i].style.display = "none";
+                }
+            }       
+            }
+        }
+        </script>
+    
+</body>
+</html>
